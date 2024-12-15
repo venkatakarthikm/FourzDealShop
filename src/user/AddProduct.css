@@ -1,0 +1,185 @@
+/* General Form Styling */
+.floating-form {
+  max-width: 600px;
+  margin: 20px auto;
+  padding: 20px;
+  background-color: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  font-family: Arial, sans-serif;
+}
+
+/* Floating Label Styling */
+.floating-label {
+  position: relative;
+  margin-bottom: 20px;
+}
+
+.floating-label input,
+.floating-label textarea {
+  width: 100%;
+  padding: 10px 10px 10px 5px;
+  background: none;
+  border: none;
+  border-bottom: 2px solid #ccc;
+  outline: none;
+  font-size: 16px;
+  color: #333;
+}
+
+.floating-label label {
+  position: absolute;
+  top: 10px;
+  left: 5px;
+  font-size: 16px;
+  color: #aaa;
+  transition: 0.3s ease all;
+  pointer-events: none;
+}
+
+.floating-label input:focus + label,
+.floating-label textarea:focus + label,
+.floating-label input:not(:placeholder-shown) + label,
+.floating-label textarea:not(:placeholder-shown) + label {
+  top: -20px;
+  left: 0;
+  font-size: 12px;
+  color: #2196f3;
+}
+
+/* Select Dropdown Styling */
+select {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 20px;
+  font-size: 16px;
+  border: 2px solid #ccc;
+  border-radius: 4px;
+  background-color: #f9f9f9;
+}
+
+/* Date Picker Styling */
+.date-picker {
+  width: 100%;
+  padding: 10px;
+  border: 2px solid #ccc;
+  border-radius: 4px;
+  font-size: 16px;
+  margin-bottom: 20px;
+}
+
+/* Textarea Styling */
+textarea {
+  height: 100px;
+  resize: none;
+}
+
+/* Drag and Drop Zone Styling */
+.drop-zone {
+  padding: 20px;
+  border: 2px dashed #2196f3;
+  border-radius: 4px;
+  text-align: center;
+  color: #777;
+  cursor: pointer;
+  margin-bottom: 20px;
+}
+
+.drop-zone:hover {
+  background-color: #f1f8ff;
+}
+
+/* Image Preview Styling */
+.image-preview {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.preview-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.preview-item img {
+  width: 80px;
+  height: 80px;
+  object-fit: cover;
+  border-radius: 4px;
+  margin-bottom: 5px;
+}
+
+/* Button Styling */
+button[type="submit"] {
+  width: 100%;
+  padding: 10px;
+  font-size: 16px;
+  color: #fff;
+  background-color: #2196f3;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+button[type="submit"]:hover {
+  background-color: #1976d2;
+}
+
+.date-picker {
+  width: 100%;
+  padding: 10px;
+  font-size: 14px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  margin-bottom: 10px;
+}
+
+.date-time-picker {
+  display: flex;
+  flex-direction: column;
+  margin: 10px 0;
+}
+
+.floating-form {
+  max-width: 600px;
+  margin: auto;
+  padding: 20px;
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.floating-label {
+  position: relative;
+  margin-bottom: 15px;
+}
+
+.floating-label input,
+.floating-label textarea {
+  width: 100%;
+  padding: 10px 5px;
+  font-size: 16px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+.floating-label label {
+  position: absolute;
+  top: 0;
+  left: 5px;
+  font-size: 14px;
+  color: #888;
+  transition: all 0.2s;
+}
+
+.floating-label input:focus + label,
+.floating-label textarea:focus + label,
+.floating-label input:not(:placeholder-shown) + label,
+.floating-label textarea:not(:placeholder-shown) + label {
+  top: -15px;
+  font-size: 12px;
+  color: #333;
+}

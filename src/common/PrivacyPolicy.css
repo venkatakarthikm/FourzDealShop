@@ -1,0 +1,51 @@
+.policy-container, .terms-container {
+    font-family: Arial, sans-serif;
+    margin: 20px;
+    padding: 20px;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    background-color: #f9f9f9;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  }
+  
+  h1 {
+    color: #333;
+    font-size: 2.5em;
+    margin-bottom: 20px;
+  }
+  
+  h2 {
+    color: #555;
+    font-size: 1.8em;
+    margin-top: 20px;
+    margin-bottom: 10px;
+  }
+  
+  p, ul {
+    color: #666;
+    font-size: 1em;
+    line-height: 1.6;
+  }
+  
+  ul {
+    padding-left: 20px;
+  }
+  
+  li {
+    margin-bottom: 10px;
+  }
+  
+  footer {
+    margin-top: 20px;
+    font-size: 0.9em;
+  }
+  
+  footer a {
+    color: #007bff;
+    text-decoration: none;
+  }
+  
+  footer a:hover {
+    text-decoration: underline;
+  }
+  

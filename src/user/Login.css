@@ -1,0 +1,99 @@
+/* Common styles for both forms */
+.form-container {
+  width: 400px;
+  margin: 50px auto;
+  padding: 20px;
+  border-radius: 10px;
+  background-color: #f9f9f9;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Form title styling */
+.form-container h2 {
+  text-align: center;
+  margin-bottom: 20px;
+  font-size: 24px;
+  color: #333;
+}
+
+/* Success and error message styling */
+.success-message {
+  color: green;
+  font-weight: bold;
+  text-align: center;
+}
+
+.error-message {
+  color: red;
+  font-weight: bold;
+  text-align: center;
+}
+
+/* Form group styling */
+.form-group {
+  margin-bottom: 15px;
+}
+
+.form-group label {
+  display: block;
+  font-size: 14px;
+  font-weight: bold;
+  margin-bottom: 5px;
+  color: #333;
+}
+
+.form-group input {
+  width: 100%;
+  padding: 10px;
+  font-size: 16px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  box-sizing: border-box;
+  transition: border-color 0.3s ease-in-out;
+}
+
+/* Change border color when input is focused */
+.form-group input:focus {
+  border-color: #007bff;
+  outline: none;
+}
+
+/* Button styling */
+.button {
+  width: 100%;
+  padding: 10px;
+  font-size: 18px;
+  font-weight: bold;
+  color: #fff;
+  background-color: #007bff;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease-in-out;
+  margin-bottom: 10px; /* Add space between buttons */
+}
+
+.button:hover {
+  background-color: #0056b3;
+}
+
+/* Link styling */
+.switch-link {
+  display: block;
+  text-align: center;
+  font-size: 16px;
+  color: #007bff;
+  text-decoration: none;
+  margin-top: 10px; /* Add space above link */
+}
+
+.switch-link:hover {
+  text-decoration: underline; /* Underline on hover */
+}
+
+/* Responsive adjustments */
+@media (max-width: 480px) {
+  .form-container {
+      width: 90%;
+  }
+}

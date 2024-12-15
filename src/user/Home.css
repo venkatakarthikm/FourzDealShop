@@ -1,0 +1,289 @@
+.home-container {
+  padding: 50px;
+  background-color: #f9f9f9;
+}
+
+.product-display {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 50px;
+  padding: 20px;
+  background-color: #fff;
+  border-radius: 15px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease-in-out;
+  position: relative; /* Added for positioning the arrows */
+}
+
+.product-display:hover {
+  transform: scale(1.03); /* Smooth scale effect on hover */
+}
+
+.product-details {
+  max-width: 40%;
+  text-align: left;
+}
+
+.product-name {
+  font-size: 28px;
+  font-weight: 700;
+  margin-bottom: 20px;
+}
+
+.product-description {
+  font-size: 16px;
+  color: #666;
+  line-height: 1.6;
+  margin-bottom: 20px;
+}
+
+.pricing {
+  margin-bottom: 20px;
+}
+
+.original-price {
+  font-size: 20px;
+  color: #999;
+  text-decoration: line-through;
+}
+
+.discounted-price {
+  font-size: 24px;
+  font-weight: bold;
+  color: #e60023; /* Red for the discounted price */
+}
+
+.savings {
+  font-size: 18px;
+  color: #27ae60; /* Green for savings */
+}
+
+.countdown {
+  font-size: 16px;
+  font-weight: bold;
+  color: #ff6f61;
+  margin-bottom: 15px;
+}
+
+.find-retailers {
+  background-color: #1a73e8;
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 25px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.find-retailers:hover {
+  background-color: #0b59db;
+}
+
+.product-slider {
+  position: relative;
+  max-width: 50%;
+}
+
+.product-image {
+  width: 100%;
+  height: auto;
+  border-radius: 10px;
+  transition: opacity 0.5s ease;
+}
+
+.fade-in {
+  animation: fadeIn 0.5s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.arrow {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background-color: rgba(0, 0, 0, 0.5);
+  color: white;
+  border: none;
+  padding: 10px;
+  font-size: 20px;
+  cursor: pointer;
+  z-index: 1; /* Ensure arrows are on top */
+}
+
+.left-arrow {
+  left: 10px;
+}
+
+.right-arrow {
+  right: 10px;
+}
+
+/* Style for the image count */
+.image-count {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background-color: rgba(0, 0, 0, 0.7);
+  color: white;
+  padding: 5px 10px;
+  border-radius: 20px;
+  font-size: 14px;
+}
+
+.top-product-card {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 50px;
+  padding: 20px;
+  background-color: #fff;
+  border-radius: 15px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease-in-out;
+  height: 400px; /* Increased height for the card */
+  width: 100%; /* Full width */
+  position: relative; /* Position relative for absolute children */
+  overflow: hidden; /* Hide overflow */
+}
+
+.top-product-details {
+  max-width: 60%; /* Adjust the width as needed */
+  text-align: left;
+  display: flex;
+  flex-direction: column;
+  justify-content: center; /* Center align the contents vertically */
+}
+
+.top-product-name {
+  font-size: 28px;
+  font-weight: 700;
+  margin-bottom: 10px; /* Adjust margin for spacing */
+}
+
+.top-pricing {
+  margin-bottom: 20px;
+  display: flex;
+  flex-direction: column; /* Stack prices vertically */
+}
+
+.top-original-price {
+  font-size: 20px;
+  color: #999;
+  text-decoration: line-through;
+}
+
+.top-discounted-price {
+  font-size: 24px;
+  font-weight: bold;
+  color: #e60023; /* Red for the discounted price */
+}
+
+.top-savings {
+  font-size: 18px;
+  color: #27ae60; /* Green for savings */
+}
+
+.top-product-navigation {
+  margin-top: auto; /* Align to the bottom */
+  display: flex;
+  align-items: center;
+}
+
+.arrow {
+  background-color: transparent;
+  border: none;
+  font-size: 24px;
+  cursor: pointer;
+  margin: 0 5px;
+}
+
+.top-product-image {
+  max-width: 40%; /* Adjust the width as needed */
+  height: 100%; /* Full height */
+  display: flex;
+  align-items: center; /* Center the image vertically */
+  justify-content: center; /* Center the image horizontally */
+  overflow: hidden; /* Hide overflow */
+}
+
+.top-product-image-element {
+  width: auto; /* Maintain aspect ratio */
+  height: 100%; /* Full height */
+  object-fit: cover; /* Ensure the image covers the entire container */
+  transition: opacity 0.5s ease;
+}
+
+/* Dots for current slide */
+.top-product-dots {
+  text-align: center;
+  margin-top: 10px;
+  position: absolute; /* Position dots at the bottom of the card */
+  bottom: 10px;
+  left: 50%;
+  transform: translateX(-50%); /* Center the dots */
+}
+
+.dot {
+  height: 12px;
+  width: 12px;
+  margin: 0 5px;
+  background-color: #bbb;
+  border-radius: 50%;
+  display: inline-block;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.dot.active {
+  background-color: #717171; /* Active dot color */
+}
+
+.dot:hover {
+  background-color: #e60023; /* Change color on hover */
+}
+
+/* Image fade-in animation */
+.product-image.fade-in {
+  opacity: 0;
+  animation: fadeIn 0.5s forwards;
+}
+
+@keyframes fadeIn {
+  to {
+    opacity: 1;
+  }
+}
+
+
+/* Styling for View Product button */
+.view-product-button {
+  background-color: black;
+  color: white;
+  border: 2px solid black;
+  padding: 10px 20px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin-top: 15px;
+}
+
+.view-product-button:hover {
+  background-color: white;
+  color: black;
+  border: 2px solid black;
+}
+
+/* Optional: Button with subtle animation */
+.view-product-button:active {
+  transform: scale(0.98);
+}
+
