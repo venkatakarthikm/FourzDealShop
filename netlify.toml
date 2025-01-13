@@ -1,0 +1,16 @@
+# Specify build settings
+[build]
+  # Command to install dependencies and build the project
+  command = "npm install --force && npm run build"
+  # Directory to publish after the build
+  publish = "build"
+  # Environment variables for the build
+  [build.environment]
+    NODE_VERSION = "16"
+    CI = "false" # Disables strict CI mode for warnings
+
+# Redirect settings (if applicable, such as for React apps)
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
