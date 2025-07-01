@@ -106,7 +106,7 @@ export default function App() {
       <div className="content"></div>
       <footer className="footer">
         <div className="footer-content">
-          <p>&copy; 2024 FourzCart. All rights reserved.</p>
+          <p>&copy; 2024 FourzDeals. All rights reserved.</p>
           <p>
             <a href="/privacy">Privacy Policy</a> | <a href="/terms">Terms of Service</a> | <a href="/">Sell Products</a>
           </p>

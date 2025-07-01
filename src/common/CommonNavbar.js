@@ -34,7 +34,7 @@ export default function CommonNavbar({ onUserLogin }) {
           <div className="nav-brand">
             <Link to="/" className="brand-link">
               <Store className="brand-icon" />
-              <span className="brand-text">Shop</span>
+              <span className="brand-text">Fourz Deals</span>
             </Link>
           </div>
 
