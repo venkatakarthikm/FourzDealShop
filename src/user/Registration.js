@@ -1,115 +1,100 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import axios from 'axios'; // Axios for API requests
-import emailjs from '@emailjs/browser';
-import './Registration.css'; // Import your CSS
-import config from '../config';
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import axios from "axios";
+import emailjs from "@emailjs/browser";
+import config from "../config";
+import "./Registration.css";
 
 export default function Registration() {
-  const [step, setStep] = useState(1); // Step state to track progress
+  const [step, setStep] = useState(1);
   const [formData, setFormData] = useState({
-    username: '',
-    email: '',
-    address: '',
-    contact: '',
-    password: ''
+    username: "",
+    email: "",
+    address: "",
+    contact: "",
+    password: ""
   });
+  const [imageFile, setImageFile] = useState(null);
   const [generatedCode, setGeneratedCode] = useState(null);
-  const [enteredCode, setEnteredCode] = useState('');
+  const [enteredCode, setEnteredCode] = useState("");
   const [verified, setVerified] = useState(false);
-  const [message, setMessage] = useState('');
-  const [error, setError] = useState('');
-
+  const [message, setMessage] = useState("");
+  const [error, setError] = useState("");
   const navigate = useNavigate();
 
   const handleChange = (e) => {
     const { id, value } = e.target;
-    setFormData({ ...formData, [id]: value });
+    setFormData((prev) => ({ ...prev, [id]: value }));
   };
 
-  // Function to check email existence before OTP
+  const handleImageSelect = (e) => {
+    setImageFile(e.target.files[0]);
+  };
+
+  const handleImageDrop = (e) => {
+    e.preventDefault();
+    setImageFile(e.dataTransfer.files[0]);
+  };
+
   const checkEmailExistence = async () => {
     try {
       const response = await axios.post(`${config.url}/checkemail`, { email: formData.email });
-      if (response.status === 200) {
-        return true; // Email is available
-      }
+      return response.status === 200;
     } catch (error) {
-      setError(error.response?.data?.message || 'An error occurred while checking email');
+      setError(error.response?.data?.message || "Error checking email");
       return false;
     }
   };
 
-  // Function to generate and send OTP
   const generateVerificationCode = () => {
     const code = Math.floor(100000 + Math.random() * 900000).toString();
     setGeneratedCode(code);
-
-    const emailParams = {
+    emailjs.send("default_service", "template_5e30u0j", {
       to_name: formData.username,
       otp: code,
-      from_name: 'YourAppName',
+      from_name: "YourAppName",
       reply_to: formData.email,
       to_email: formData.email
-    };
-
-    emailjs.send('default_service', 'template_5e30u0j', emailParams, 'yXwnA8Bhd2JORQ9W9')
-      .then(() => {
-        setMessage(`Verification code sent to your email ${formData.email}`);
-      })
-      .catch((error) => {
-        console.error('Error sending email: ', error);
-        setMessage('Failed to send verification code.');
-      });
+    }, "yXwnA8Bhd2JORQ9W9").then(() => {
+      setMessage(`Verification code sent to ${formData.email}`);
+    }).catch(() => {
+      setMessage("Failed to send verification code.");
+    });
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     if (step === 1) {
-      // Check if email is already registered
       const emailAvailable = await checkEmailExistence();
       if (emailAvailable) {
-        // Send verification code
         setError("");
         generateVerificationCode();
-        setStep(2); // Move to verification step
-      } else {
-        setError('User with this email already exists.');
+        setStep(2);
       }
     } else if (step === 2) {
-      // Verify the entered code
-      if (enteredCode === generatedCode || enteredCode === '4444') {
+      if (enteredCode === generatedCode || enteredCode === "4444") {
         setVerified(true);
-        setStep(3); // Proceed to final form submission
+        setStep(3);
       } else {
-        setMessage('Invalid verification code. Please try again.');
+        setMessage("Invalid verification code.");
       }
     } else if (step === 3 && verified) {
-      // Submit form data to the backend
+      const form = new FormData();
+      for (const key in formData) form.append(key, formData[key]);
+      if (imageFile) form.append("image", imageFile);
+
       try {
-        const response = await axios.post(`${config.url}/insertuser`, formData);
-        if (response.status === 200) {
-          setFormData({
-            username: '',
-            email: '',
-            address: '',
-            contact: '',
-            password: ''
-          });
-          setMessage('Registered successfully');
-          setError('');
-          navigate('/login');
+        const res = await axios.post(`${config.url}/insertuser`, form);
+        if (res.status === 200) {
+          setMessage("Registered successfully");
+          setError("");
+          navigate("/login");
         }
-      } catch (error) {
-        setError(error.response?.data?.message || 'An error occurred');
-        setMessage('');
+      } catch (err) {
+        setError(err.response?.data?.message || "Registration failed");
       }
     }
-  };
-
-  const handleSwitchToLogin = () => {
-    navigate('/login');
   };
 
   return (
@@ -117,87 +102,53 @@ export default function Registration() {
       <h2>User Registration</h2>
       {message && <p className="success-message">{message}</p>}
       {error && <p className="error-message">{error}</p>}
-      
-      <form onSubmit={handleSubmit}>
+      <form onSubmit={handleSubmit} onDrop={handleImageDrop} onDragOver={(e) => e.preventDefault()}>
         {step === 1 && (
           <>
             <div className="form-group">
               <label>Username</label>
-              <input
-                type="text"
-                id="username"
-                value={formData.username}
-                onChange={handleChange}
-                required
-              />
+              <input id="username" value={formData.username} onChange={handleChange} required />
             </div>
             <div className="form-group">
               <label>Email</label>
-              <input
-                type="email"
-                id="email"
-                value={formData.email}
-                onChange={handleChange}
-                required
-              />
+              <input id="email" type="email" value={formData.email} onChange={handleChange} required />
             </div>
-            <button type="submit" className="button">Send Verification Code</button>
+            <button className="button" type="submit">Send Verification Code</button>
           </>
         )}
-
         {step === 2 && (
           <>
             <div className="form-group">
               <label>Enter Verification Code</label>
-              <input
-                type="text"
-                id="enteredCode"
-                value={enteredCode}
-                onChange={(e) => setEnteredCode(e.target.value)}
-                required
-              />
+              <input value={enteredCode} onChange={(e) => setEnteredCode(e.target.value)} required />
             </div>
-            <button type="submit" className="button">Verify Code</button>
+            <button className="button" type="submit">Verify Code</button>
           </>
         )}
-
         {step === 3 && verified && (
           <>
             <div className="form-group">
               <label>Address</label>
-              <input
-                type="text"
-                id="address"
-                value={formData.address}
-                onChange={handleChange}
-                required
-              />
+              <input id="address" value={formData.address} onChange={handleChange} required />
             </div>
             <div className="form-group">
               <label>Contact</label>
-              <input
-                type="text"
-                id="contact"
-                value={formData.contact}
-                onChange={handleChange}
-                required
-              />
+              <input id="contact" value={formData.contact} onChange={handleChange} required />
             </div>
             <div className="form-group">
               <label>Password</label>
-              <input
-                type="password"
-                id="password"
-                value={formData.password}
-                onChange={handleChange}
-                required
-              />
+              <input type="password" id="password" value={formData.password} onChange={handleChange} required />
             </div>
-            <button type="submit" className="button">Register</button>
+            <div className="form-group">
+              <label>Upload Profile Image</label>
+              <input type="file" onChange={handleImageSelect} />
+              {imageFile && <p>Selected: {imageFile.name}</p>}
+              <p>Or drag & drop image here</p>
+            </div>
+            <button className="button" type="submit">Register</button>
           </>
         )}
-
-        <span onClick={handleSwitchToLogin} className="switch-link">Switch to Login</span>
+        <span className="switch-link" onClick={() => navigate("/login")}>Switch to Login</span>
       </form>
     </div>
   );

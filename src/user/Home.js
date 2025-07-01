@@ -1,5 +1,7 @@
+
 import React, { useEffect, useState } from "react";
 import axios from "axios";
+import { ChevronLeft, ChevronRight, Clock, ShoppingCart, Eye } from 'lucide-react';
 import "./Home.css";
 import config from "../config";
 
@@ -9,51 +11,47 @@ const Home = () => {
   const [timeLeft, setTimeLeft] = useState({});
   const [topProducts, setTopProducts] = useState([]);
   const [topProductIndex, setTopProductIndex] = useState(0);
-  const [intervalId, setIntervalId] = useState(null);
+  const [recentProducts, setRecentProducts] = useState([]);
+  const [recommendedProducts, setRecommendedProducts] = useState([]);
+  const [homeLoading, setHomeLoading] = useState(true);
+  const [addingToCart, setAddingToCart] = useState({});
+  const user = JSON.parse(localStorage.getItem("user"));
 
-  // Fetch products from backend
   useEffect(() => {
     const fetchProducts = async () => {
       try {
+        setHomeLoading(true);
         const response = await axios.get(`${config.url}/saleproducts`);
         setProducts(response.data);
-
-        // Initialize each product's current image index to 0
-        const initialIndexes = response.data.reduce((acc, product) => {
-          acc[product.productId] = 0;
-          return acc;
-        }, {});
-        setImageIndexes(initialIndexes);
-
-        // Initialize countdown timers for each product
-        const initialTimeLeft = response.data.reduce((acc, product) => {
-          const discountEndDate = new Date(product.discountValidUntil);
-          const now = new Date();
-          acc[product.productId] = Math.max(discountEndDate - now, 0);
-          return acc;
-        }, {});
-        setTimeLeft(initialTimeLeft);
-
-        // Set top products based on discount
-        const sortedProducts = response.data
-          .filter(product => product.priceDiscount > 0) // Only products with discount
-          .sort((a, b) => b.priceDiscount - a.priceDiscount) // Sort by discount
-          .slice(0, 5); // Get top 5
-        setTopProducts(sortedProducts);
-      } catch (error) {
-        console.error("Error fetching products:", error);
+        
+        const indexes = {};
+        const times = {};
+        response.data.forEach((product) => {
+          indexes[product.productId] = 0;
+          times[product.productId] = Math.max(new Date(product.discountValidUntil) - new Date(), 0);
+        });
+        setImageIndexes(indexes);
+        setTimeLeft(times);
+        
+        const sorted = response.data
+          .filter((p) => p.priceDiscount > 0)
+          .sort((a, b) => b.priceDiscount - a.priceDiscount)
+          .slice(0, 5);
+        setTopProducts(sorted);
+      } catch (err) {
+        console.error("Error fetching products:", err);
+      } finally {
+        setHomeLoading(false);
       }
     };
-
     fetchProducts();
   }, []);
 
-  // Update countdown every second
   useEffect(() => {
     const interval = setInterval(() => {
-      setTimeLeft((prevTimeLeft) =>
-        Object.keys(prevTimeLeft).reduce((acc, productId) => {
-          acc[productId] = Math.max(prevTimeLeft[productId] - 1000, 0);
+      setTimeLeft((prev) =>
+        Object.keys(prev).reduce((acc, id) => {
+          acc[id] = Math.max(prev[id] - 1000, 0);
           return acc;
         }, {})
       );
@@ -61,148 +59,251 @@ const Home = () => {
     return () => clearInterval(interval);
   }, []);
 
-  // Automatically change the top product index
   useEffect(() => {
+    if (!topProducts.length) return;
     const interval = setInterval(() => {
-      setTopProductIndex((prevIndex) => (prevIndex + 1) % topProducts.length);
-    }, 4000); // Change every 4 seconds
-    setIntervalId(interval);
+      setTopProductIndex((prev) => (prev + 1) % topProducts.length);
+    }, 4000);
     return () => clearInterval(interval);
   }, [topProducts.length]);
 
-  // Handle next image for the slider
-  const nextImage = (productId, imagesLength) => {
-    setImageIndexes((prevIndexes) => ({
-      ...prevIndexes,
-      [productId]: (prevIndexes[productId] + 1) % imagesLength,
+  useEffect(() => {
+    const fetchRecentAndRecommended = async () => {
+      if (!user?.username) return;
+      try {
+        const response = await axios.get(`${config.url}/products/recent-recommended/${user.username}`);
+        setRecentProducts(response.data.recent);
+        setRecommendedProducts(response.data.recommended);
+      } catch (error) {
+        console.error("Error loading recent/recommended:", error);
+      }
+    };
+    fetchRecentAndRecommended();
+  }, [user]);
+
+  const nextImage = (productId, total) => {
+    setImageIndexes((prev) => ({
+      ...prev,
+      [productId]: (prev[productId] + 1) % total,
     }));
   };
 
-  // Convert milliseconds to time components (days, hours, minutes, seconds)
   const formatTimeLeft = (time) => {
-    const days = Math.floor(time / (1000 * 60 * 60 * 24));
-    const hours = Math.floor((time % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-    const minutes = Math.floor((time % (1000 * 60 * 60)) / (1000 * 60));
-    const seconds = Math.floor((time % (1000 * 60)) / 1000);
-    return `${days}d ${hours}h ${minutes}m ${seconds}s`;
+    const d = Math.floor(time / (1000 * 60 * 60 * 24));
+    const h = Math.floor((time % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+    const m = Math.floor((time % (1000 * 60 * 60)) / (1000 * 60));
+    const s = Math.floor((time % (1000 * 60)) / 1000);
+    return `${d}d ${h}h ${m}m ${s}s`;
   };
 
-  // Handle "View Product" button click
   const handleViewProduct = (productId) => {
-    window.location.href = `/viewproduct/${productId}`; // Navigate to the product page
+    window.location.href = `/viewproduct/${productId}`;
   };
+
+  const addToCart = async (productId) => {
+    if (!user) return;
+    
+    setAddingToCart(prev => ({ ...prev, [productId]: true }));
+    try {
+      await axios.post(`${config.url}/cart/add`, {
+        userId: user.userid,
+        productId,
+        quantity: 1,
+      });
+    } catch (error) {
+      console.error("Failed to add to cart:", error);
+    } finally {
+      setAddingToCart(prev => ({ ...prev, [productId]: false }));
+    }
+  };
+
+  const HomeLoadingSkeleton = () => (
+    <div className="home-loading-container">
+      <div className="home-skeleton-hero"></div>
+      <div className="home-skeleton-grid">
+        {[...Array(6)].map((_, i) => (
+          <div key={i} className="home-skeleton-card"></div>
+        ))}
+      </div>
+    </div>
+  );
+
+  if (homeLoading) return <HomeLoadingSkeleton />;
+
+  const renderHomeProductCard = (product) => {
+    const timeRemaining = timeLeft[product.productId];
+    const discountedPrice = product.originalPrice - product.priceDiscount;
+    
+    return (
+      <div className="home-product-card home-animate-slide-up" key={product.productId}>
+        <div className="home-product-image-container">
+          <img
+            src={product.productImages[imageIndexes[product.productId]]}
+            alt={product.productName}
+            className="home-product-image"
+          />
+          <button
+            className="home-image-nav-btn home-next-btn"
+            onClick={() => nextImage(product.productId, product.productImages.length)}
+          >
+            <ChevronRight className="home-icon" />
+          </button>
+          <div className="home-image-indicators">
+            {product.productImages.map((_, index) => (
+              <div
+                key={index}
+                className={`home-indicator ${index === imageIndexes[product.productId] ? 'home-active' : ''}`}
+              />
+            ))}
+          </div>
+          <div className="home-sale-badge">
+            {Math.round((product.priceDiscount / product.originalPrice) * 100)}% OFF
+          </div>
+        </div>
+
+        <div className="home-product-content">
+          <h3 className="home-product-title">{product.productName}</h3>
+          <div className="home-product-seller">by {product.productOwner}</div>
+          
+          <div className="home-product-pricing">
+            <div className="home-price-main">${discountedPrice.toFixed(2)}</div>
+            <div className="home-price-original">${product.originalPrice.toFixed(2)}</div>
+            <div className="home-price-savings">Save ${product.priceDiscount.toFixed(2)}</div>
+          </div>
+
+          <div className="home-product-stock">
+            <div className="home-stock-indicator">
+              <div className="home-stock-bar">
+                <div 
+                  className="home-stock-fill" 
+                  style={{width: `${Math.min((product.stock / 100) * 100, 100)}%`}}
+                ></div>
+              </div>
+              <span className="home-stock-text">{product.stock} left</span>
+            </div>
+          </div>
+
+          {timeRemaining > 0 && (
+            <div className="home-countdown-timer">
+              <Clock className="home-timer-icon" />
+              <span className="home-timer-text">{formatTimeLeft(timeRemaining)}</span>
+            </div>
+          )}
+
+          <div className="home-product-actions">
+            <button
+              className="home-btn home-btn-primary"
+              onClick={() => handleViewProduct(product.productId)}
+            >
+              <Eye className="home-btn-icon" />
+              View Details
+            </button>
+            {user && (
+              <button
+                className={`home-btn home-btn-secondary ${addingToCart[product.productId] ? 'home-loading' : ''}`}
+                onClick={() => addToCart(product.productId)}
+                disabled={addingToCart[product.productId]}
+              >
+                <ShoppingCart className="home-btn-icon" />
+                {addingToCart[product.productId] ? 'Adding...' : 'Add to Cart'}
+              </button>
+            )}
+          </div>
+        </div>
+      </div>
+    );
+  };
+
+  const renderHomeGridSection = (title, products) => (
+    <section className="home-grid-section home-animate-fade-in">
+      <h2 className="home-section-title">{title}</h2>
+      <div className="home-product-grid">
+        {products.map((product) => (
+          <div 
+            key={product.productId} 
+            className="home-grid-card home-animate-scale-in"
+            onClick={() => handleViewProduct(product.productId)}
+          >
+            <div className="home-grid-image-container">
+              <img 
+                src={product.productImages?.[0]} 
+                alt={product.productName} 
+                className="home-grid-image" 
+              />
+              {product.saleType !== "Regular" && (
+                <div className="home-grid-badge">{product.saleType}</div>
+              )}
+            </div>
+            <div className="home-grid-content">
+              <h3 className="home-grid-title">{product.productName}</h3>
+              <div className="home-grid-seller">by {product.productOwner}</div>
+              <div className="home-grid-stock">{product.stock} in stock</div>
+            </div>
+          </div>
+        ))}
+      </div>
+    </section>
+  );
 
   return (
     <div className="home-container">
-      {/* Top Products Section */}
+      {/* Hero Section */}
       {topProducts.length > 0 && (
-        <>
-          <h2 className="section-heading">Top 5 Products</h2>
-          <div className="top-product-card">
-            <div className="top-product-details">
-              <h2 className="top-product-name">{topProducts[topProductIndex].productName}</h2>
-              <div className="top-pricing">
-                <p className="top-original-price">
+        <section className="home-hero-section home-animate-fade-in">
+          <div className="home-hero-content">
+            <div className="home-hero-text">
+              <div className="home-hero-badge">Featured Deal</div>
+              <h1 className="home-hero-title">{topProducts[topProductIndex].productName}</h1>
+              <div className="home-hero-pricing">
+                <span className="home-hero-price">
+                  ${(topProducts[topProductIndex].originalPrice - topProducts[topProductIndex].priceDiscount).toFixed(2)}
+                </span>
+                <span className="home-hero-original-price">
                   ${topProducts[topProductIndex].originalPrice.toFixed(2)}
-                </p>
-                <p className="top-discounted-price">
-                  ${ (topProducts[topProductIndex].originalPrice - topProducts[topProductIndex].priceDiscount).toFixed(2) }
-                </p>
-                <p className="top-savings">
-                  You save ${topProducts[topProductIndex].priceDiscount.toFixed(2)}
-                </p>
+                </span>
               </div>
-              <div className="top-product-dots">
-                {topProducts.map((_, index) => (
-                  <span
-                    key={index}
-                    className={`dot ${topProductIndex === index ? 'active' : ''}`}
-                    onClick={() => setTopProductIndex(index)}
-                  ></span>
-                ))}
+              <div className="home-hero-savings">
+                Save ${topProducts[topProductIndex].priceDiscount.toFixed(2)}
               </div>
-
-              {/* View Product Button for Top Products */}
               <button
-                className="view-product-button"
+                className="home-hero-btn"
                 onClick={() => handleViewProduct(topProducts[topProductIndex].productId)}
               >
-                View Product
+                Shop Now
               </button>
             </div>
-            <div className="top-product-image">
+            <div className="home-hero-image">
               <img
-                src={`${config.url}${topProducts[topProductIndex].productImages[0]}`}
+                src={topProducts[topProductIndex].productImages[0]}
                 alt={topProducts[topProductIndex].productName}
-                className="top-product-image-element fade-in"
+                className="home-hero-product-image"
               />
             </div>
           </div>
-        </>
+          <div className="home-hero-indicators">
+            {topProducts.map((_, index) => (
+              <button
+                key={index}
+                className={`home-hero-indicator ${topProductIndex === index ? 'home-active' : ''}`}
+                onClick={() => setTopProductIndex(index)}
+              />
+            ))}
+          </div>
+        </section>
       )}
 
-      {/* Sale Products Section */}
-      <h2 className="section-heading">Sale Products</h2>
-      {products.map((product) => {
-        const timeRemaining = timeLeft[product.productId];
+      {/* Sale Products */}
+      <section className="home-sale-section">
+        <h2 className="home-section-title">Flash Sales</h2>
+        <div className="home-products-container">
+          {products.map(renderHomeProductCard)}
+        </div>
+      </section>
 
-        return (
-          <div className="product-display" key={product.productId}>
-            {/* Left Section: Product Details */}
-            <div className="product-details">
-              <h2 className="product-name">{product.productName}</h2>
-              {/* Display prices with discount */}
-              <div className="pricing">
-                <p className="original-price">
-                  ${product.originalPrice.toFixed(2)}
-                </p>
-                <p className="discounted-price">
-                  ${ (product.originalPrice - product.priceDiscount).toFixed(2) }
-                </p>
-                <p className="savings">
-                  You save ${product.priceDiscount.toFixed(2)}
-                </p>
-              </div>
-
-              {/* Countdown timer */}
-              {timeRemaining > 0 && (
-                <p className="countdown">
-                  Sale ends in: {formatTimeLeft(timeRemaining)}
-                </p>
-              )}
-
-              {/* View Product Button */}
-              <button
-                className="view-product-button"
-                onClick={() => handleViewProduct(product.productId)}
-              >
-                View Product
-              </button>
-            </div>
-
-            {/* Right Section: Image Slider */}
-            <div className="product-slider">
-              <button
-                className="arrow right-arrow"
-                onClick={() => nextImage(product.productId, product.productImages.length)}
-              >
-                &#8250;
-              </button>
-
-              {/* Image count on top-right */}
-              <div className="image-count">
-                {imageIndexes[product.productId] + 1}/{product.productImages.length}
-              </div>
-
-              <img
-                src={`${config.url}${product.productImages[imageIndexes[product.productId]]}`}
-                alt={product.productName}
-                className="product-image fade-in"
-              />
-            </div>
-          </div>
-        );
-      })}
+      {/* User-specific sections */}
+      {user && recentProducts.length > 0 && renderHomeGridSection("Continue Shopping", recentProducts)}
+      {user && recommendedProducts.length > 0 && renderHomeGridSection("Recommended for You", recommendedProducts)}
+      {!user && renderHomeGridSection("Popular Products", products.slice(0, 6))}
     </div>
   );
 };

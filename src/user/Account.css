@@ -1,0 +1,79 @@
+.account-settings {
+  max-width: 500px;
+  margin: auto;
+  padding: 20px;
+}
+
+.account-header {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.account-avatar {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  object-fit: cover;
+  background-color: #d9d9d9;
+  font-size: 24px;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.account-avatar.fallback {
+  background-color: #3f51b5;
+  color: white;
+  font-weight: bold;
+  font-size: 28px;
+}
+
+.account-info h2 {
+  margin: 0;
+  font-size: 24px;
+}
+
+.account-info p {
+  margin: 0;
+  font-size: 14px;
+  color: #555;
+}
+
+.image-upload {
+  margin-bottom: 15px;
+  padding: 10px;
+  border: 2px dashed #ccc;
+  text-align: center;
+  cursor: pointer;
+}
+
+.preview-img {
+  width: 80px;
+  height: 80px;
+  object-fit: cover;
+  border-radius: 50%;
+  margin: 0 auto;
+}
+
+input[type="text"],
+input[type="password"] {
+  width: 100%;
+  padding: 10px;
+  margin: 10px 0;
+}
+
+button {
+  padding: 10px 15px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  cursor: pointer;
+}
+
+.message {
+  color: green;
+  font-weight: bold;
+}
